@@ -2,7 +2,9 @@ package server
 
 import (
 	"log"
+	"math/rand"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -31,9 +33,16 @@ func (r *RoomMap) Get(roomId string) []Participant {
 }
 
 // create a unique roomId return it and insert in hashmap
-func (r *RoomMap) CreateRoom(roomId string) string {
+func (r *RoomMap) CreateRoom() string {
 	r.Mutex.Lock()
 	defer r.Mutex.Unlock()
+	rand.Seed(time.Now().UnixNano())
+	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+	b := make([]rune, 8)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	roomId := string(b)
 	r.Map[roomId] = []Participant{}
 	return roomId
 }

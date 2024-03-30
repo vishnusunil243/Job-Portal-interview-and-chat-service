@@ -21,15 +21,7 @@ type broadcastMsg struct {
 
 func CreateRoomRequestHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	type request struct {
-		RoomId string `json:"roomId"`
-	}
-	var req request
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	roomID := AllRooms.CreateRoom(req.RoomId)
+	roomID := AllRooms.CreateRoom()
 	type resp struct {
 		RoomID string `json:"room_id"`
 	}
@@ -48,11 +40,9 @@ func Broadcaster() {
 
 		for _, client := range AllRooms.Map[msg.RoomID] {
 			if client.Conn != msg.Client && client.Conn != nil {
-				// Check if connection is still valid before sending
 				err := client.Conn.WriteJSON(msg.Message)
 				if err != nil {
 					log.Println("Error sending message to client:", err)
-					// Consider removing the disconnected client from AllRooms
 					go func() {
 						mutex.Lock()
 						defer mutex.Unlock()
