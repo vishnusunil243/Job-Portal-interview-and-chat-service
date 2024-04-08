@@ -41,7 +41,6 @@ func NewChatHandlers(usecase usecases.ChatUsecaseInterface, insertChan chan<- en
 	}
 }
 func (c *ChatHandlers) Handler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	r.Header.Del("Sec-WebSocket-Extensions")
 	userId := r.Header.Get("userId")
 	companyId := r.Header.Get("companyId")
@@ -60,13 +59,26 @@ func (c *ChatHandlers) Handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	name := userData.Name
+	clientId := userId
+	if companyId != "" {
+		companyData, err := c.CompanyConn.GetCompany(context.Background(), &pb.GetJobByCompanyId{
+			Id: companyId,
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		name = companyData.Name
+		clientId = companyId
+	}
 	conn, err := c.Upgrader.Upgrade(w, r, r.Header)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	pool, msgs := c.Usecase.SpinupPoolifnotalreadyExists(poolId, c.InsertChannel)
-	client := chat.NewClient(conn, userId, userData.Name, pool)
+	pool, msgs := c.Usecase.CreatePoolifnotalreadyExists(poolId, c.InsertChannel)
+	client := chat.NewClient(conn, clientId, name, pool)
 	client.Serve(msgs)
 }
 func (chat *ChatHandlers) Start() {

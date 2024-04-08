@@ -2,7 +2,6 @@ package chat
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 
@@ -49,7 +48,6 @@ func (client *Client) Serve(msgs []entities.Message) {
 			break
 		}
 		message := entities.Message{Type: msgtype, Message: string(p), Time: time.Now(), Name: client.Name}
-		fmt.Println("jdsldkfj ", message)
 		client.Pool.Broadcast <- message
 		log.Printf("message recieved from %s", client.ClientID)
 	}

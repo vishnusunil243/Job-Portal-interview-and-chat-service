@@ -6,5 +6,5 @@ import (
 )
 
 type ChatUsecaseInterface interface {
-	SpinupPoolifnotalreadyExists(string, chan<- entities.InsertIntoRoomMessage) (*chat.Pool, []entities.Message)
+	CreatePoolifnotalreadyExists(string, chan<- entities.InsertIntoRoomMessage) (*chat.Pool, []entities.Message)
 }

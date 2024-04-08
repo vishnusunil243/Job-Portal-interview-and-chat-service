@@ -21,24 +21,28 @@ func NewChatUsecase(adapters adapters.ChatAdapterInterface) ChatUsecase {
 		Chat:     chat.NewChatPool(),
 	}
 }
-func (c *ChatUsecase) SpinupPoolifnotalreadyExists(poolid string, insertChan chan<- entities.InsertIntoRoomMessage) (*chat.Pool, []entities.Message) {
+func (c *ChatUsecase) CreatePoolifnotalreadyExists(poolid string, insertChan chan<- entities.InsertIntoRoomMessage) (*chat.Pool, []entities.Message) {
 	res, err := c.adapters.LoadMessages(poolid)
+	ids := strings.Split(poolid, " ")
 	if err != nil {
 		log.Println("error while loading messages", err)
+		res, err = c.adapters.LoadMessages(ids[1] + " " + ids[0])
+		if err != nil {
+			log.Println("error retrieving message ", err)
+		}
 	}
 	if c.Chat.Pool[poolid] == nil {
-		ids := strings.Split(poolid, " ")
+		fmt.Println("poolId for second try ", ids)
 		if c.Chat.Pool[ids[1]+" "+ids[0]] == nil {
+			fmt.Println("no message found for id ", ids[1], ids[0])
 			pool := chat.NewPool(ids[1] + " " + ids[0])
 			go pool.Serve(insertChan)
 			c.Chat.Pool[ids[1]+" "+ids[0]] = pool
-			fmt.Println("eeeeee")
 			return pool, res
 		}
-		fmt.Println(("iiiiii"))
 		return c.Chat.Pool[ids[1]+" "+ids[0]], res
 
 	}
-	fmt.Println("111")
+	fmt.Println("pool id is ", poolid)
 	return c.Chat.Pool[poolid], res
 }
