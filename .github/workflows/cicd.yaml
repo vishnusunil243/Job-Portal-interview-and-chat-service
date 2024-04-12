@@ -1,11 +1,10 @@
 name: Publish Docker image
 
 on:
-  pull_request:
   push:
-
-    tags:
-      - "*"
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   push_to_registry:
