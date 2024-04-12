@@ -50,7 +50,6 @@ func (pool *Pool) Serve(insertChan chan<- entities.InsertIntoRoomMessage) {
 					log.Println("error happened at sending ", err)
 					continue
 				}
-				fmt.Println("hereee")
 			}
 			pool.Clients[client.ClientID] = client
 		case client := <-pool.LeaveChan:

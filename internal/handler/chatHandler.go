@@ -49,7 +49,7 @@ func (c *ChatHandlers) Handler(w http.ResponseWriter, r *http.Request) {
 	if userId != "" && recieverId != "" {
 		poolId = userId + " " + recieverId
 	} else if companyId != "" && recieverId != "" {
-		poolId = companyId + " " + recieverId
+		poolId = recieverId + " " + companyId
 	} else {
 		http.Error(w, "please provide valid headers", http.StatusBadRequest)
 		return
@@ -70,7 +70,6 @@ func (c *ChatHandlers) Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		name = companyData.Name
-		clientId = companyId
 	}
 	conn, err := c.Upgrader.Upgrade(w, r, r.Header)
 	if err != nil {
