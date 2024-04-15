@@ -11,7 +11,7 @@ func Initialize(mongo *mongo.Database) *handlers.ChatHandlers {
 	adapter := adapters.NewChatAdapter(mongo)
 	usecase := usecases.NewChatUsecase(adapter)
 	insertRoom := usecase.InsertIntoDB()
-	handler := handlers.NewChatHandlers(&usecase, insertRoom, ":8081", ":8082")
+	handler := handlers.NewChatHandlers(&usecase, insertRoom, "user-service:8081", "company-service:8082")
 	return handler
 
 }
