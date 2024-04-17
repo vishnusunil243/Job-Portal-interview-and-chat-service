@@ -73,6 +73,7 @@ func (c *ChatHandlers) Handler(w http.ResponseWriter, r *http.Request) {
 	}
 	conn, err := c.Upgrader.Upgrade(w, r, r.Header)
 	if err != nil {
+		log.Println("error while upgrading", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
